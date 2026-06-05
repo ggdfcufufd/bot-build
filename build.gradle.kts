@@ -1,14 +1,34 @@
 plugins {
-    id("java")
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id 'java'
+    id 'application'
 }
-group = "org.example"
-version = "1.0.0"
-repositories { mavenCentral() }
+
+group = 'com.bot'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
 dependencies {
-    implementation("org.telegram:telegrambots:6.9.7.1")
-    implementation("org.telegram:telegrambots-meta:6.9.7.1")
+    // Telegram Bot API
+    implementation 'org.telegram:telegrambots:6.8.0'
+    
+    // Логирование
+    implementation 'org.slf4j:slf4j-simple:2.0.9'
 }
-tasks.shadowJar {
-    manifest { attributes["Main-Class"] = "org.example.Bot" }
+
+application {
+    mainClass = 'com.bot.Main'
+}
+
+// Чтобы собирался fat JAR со всеми зависимостями
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.bot.Main'
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
